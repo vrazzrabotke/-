@@ -1,0 +1,125 @@
+Найти всю косметику для Baby skin и Young skin, поставщика Shipper 1,
+чья стоимость выше, чем
+средняя стоимость Aging skin из France и Germany;
+
+
+
+
+create or replace view temp as
+select avg(product.price_sale) as avg_price from product
+join product_type on product.id_type = product_type.id
+join manufacturer on product.id_manufacturer = manufacturer.id
+join countries on manufacturer.id_country = countries.id
+where product_type.name = 'Aging skin'
+and
+countries.name IN ('France', 'Germany');
+
+
+create view dist_adm as
+select distinct admisions.id_product, admisions.id_shipper from admisions;
+
+select product.name AS name_product, product_type.name as name_type,
+shippers.name AS name_shipper, product.price_sale, temp.avg_price
+from product
+join temp on product.price_sale > avg_price
+join product_type on product.id_type = product_type.id
+and product_type.name IN ('Baby skin', 'Young skin')
+join dist_adm on dist_adm.id_product = product.id
+join shippers on dist_adm.id_shipper = shippers.id
+and shippers.name = 'Shipper 1';
+
+
+
+
+
+
+
+SELECT product_type.name as type_name, shippers.name as shipper_name, product.price_sale
+ 
+from product
+join product_type on product.id_type = product_type.id
+and (product_type.name = 'Baby skin' or product_type.name = 'Young skin')
+join admisions on product.id = admisions.id_product
+join shippers on admisions.id_shipper = shippers.id
+and shippers.name = 'Shipper 1'
+
+where product.price_sale > (select avg(product.price_sale) from product
+join product_type on product.id_type = product_type.id
+and product_type.name = 'Aging skin'
+join manufacturer on product.id_manufacturer = manufacturer.id
+join countries on manufacturer.id_country = countries.id
+and (countries.name = 'France' or countries.name = 'Germany'));
+
+
+
+
+
+with temp as
+(select avg(product.price_sale) as avg_price from product
+join product_type on product.id_type = product_type.id
+and product_type.name = 'Aging skin'
+join manufacturer on product.id_manufacturer = manufacturer.id
+join countries on manufacturer.id_country = countries.id
+and (countries.name = 'France' or countries.name = 'Germany')),
+
+amd as
+(select id_product, id_shipper from admisions
+group by id_product, id_shipper)
+
+
+
+SELECT product.name,product_type.name as type_name, shippers.name as shipper_name, product.price_sale, temp.avg_price 
+from product
+join temp on product.price_sale > temp.avg_price 
+join product_type on product.id_type = product_type.id
+and (product_type.name = 'Baby skin' or product_type.name = 'Young skin')
+join admisions using(id_product)
+join shippers on amd.id_shipper = shippers.id
+and shippers.name = 'Shipper 1';
+
+
+
+
+
+
+
+
+Найти всю косметику для Baby skin и Young skin, производтеля Clarins или Shiseido
+поставщика Shipper 1,
+чья стоимость выше, чем
+средняя стоимость Aging skin из France и Germany от поставщика 2;
+
+
+
+with temp as (
+select avg(product.price_sale from product
+join product_type on product.id_type = product_type.id
+and)),
+adm as ()
+select product.name as name_product,product.price_sale, product_type.name as name_type, manufacturer.name as name_manufacturer, shippers.name as name_shipper
+from product
+join product_type on product.id_type = product_type.id
+and product_type.name IN ('Baby skin', 'Young skin')
+join manufacturer on product.id_manufacturer = manufacturer.id
+and manufacturer.name IN ('Clarins', 'Shiseido')
+join dist_adm on product.id = dist_adm.id_product
+join shippers on dist_adm.id_shipper = shippers.id
+and shippers.name = 'Shipper 1'
+
+where product.price_sale < (select avg(product.price_sale) from product
+join product_type on product.id_type = product_type.id
+and product_type.name IN ('Aging skin') 
+join manufacturer on product.id_manufacturer = manufacturer.id
+join countries on manufacturer.id_country = countries.id
+and countries.name IN ('France', 'Germany', 'Russia')
+join dist_adm on product.id = dist_adm.id_product
+join shippers on dist_adm.id_shipper = shippers.id
+and shippers.name = 'Shipper 2'
+)
+
+
+
+
+
+
+

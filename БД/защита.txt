@@ -1,0 +1,74 @@
+1) select * from aircraft_type_info();
+Выводит сведения по видам самолета (сортировка по наименованию вида)
+2) select * from aircraft_type_order_by_year();
+Выводит сведения по видам самолета (сортировка по году выпуска)
+3) select * from aircraft_type_order_by_cost();
+Выводит сведения по видам самолета (сортировка по стоимости)
+4) select * from aircraft_type_order_by_service_time();
+Выводит сведения по видам самолета (сортировка по сроку эксплуатации)
+5) select * from part_old_aircraft(15);
+Выводит долю старых самолетов (срок эксплуатации больше заданного)
+6) select * from cost_type_aircraft('TY-134');
+По заданному типу выводит самый дорогой самолет и его стоимость, самый дешевый и его стоимость, среднюю стоимость данного типа самолетов
+7) select * from expensive_aircraft(10000);
+Выводит самолеты (цена которых больше заданной) и их стоимость
+8) select * from fast_aircraft_from_country('Italy', 500);
+Выводит все самолеты, поступившие из заданной страны, со скоростью больше заданной
+9) select * from aircraft_quantity_ta(10);
+Выводит наименование типа самолета, наименование салона, количество самолетов каждого типа с заданным сроком эксплуатации
+10) select * from aircraft_quantity_st(10);
+Выводит наименование салона и количество самолетов с заданным сроком эксплуатации
+11) select * from part_aircraft_from_country('Russia');
+Выводит наименование и количество самолетов, поступивших из заданной страны, и их долю от общего числа самолетов
+12) select * from aircraft_capacity_year(180,1995);
+Выводит наименование самолета, его вместительность и год выпуска для заданных – вместительности и  года выпуска
+13) select * from aircraft_capacity_year(2015,'Russia',900, 980);
+Выводит самолеты с заданным годом выпуска (наименование самолета, год выпуска, стоимость, средняя стоимость по заданным условиям, страну, скорость, количество самолетов) , стоимость которых больше, чем средняя стоимость самолетов, поступивших из заданной страны и с заданными ограничениями по скорости  
+14) select * from repair();
+Выводит количество: ремонтируемых самолетов, самолетов, подлежащих ремонту (сломанные), самолетов, готовых к эксплуатации(готовые) и долю(в процентах)  сломанных к готовым
+15) select * from spare_by_name();
+выводит вид запасных частей, поступающих для ремонта самолетов отсортированных по наименованиям
+16) select * from spare_by_cost();
+выводит вид запасных частей, поступающих для ремонта самолетов отсортированных по стоимости
+17) select * from spare_by_supplier();
+выводит вид запасных частей, поступающих для ремонта самолетов отсортированных по поставщику 
+18) select * from supplier('engine','KM-14');
+Выводит поставщиков заданного вида запасных частей
+
+
+
+
+
+Проверка роли оператор
+
+\c KRkirill role_operator;
+INSERT INTO country(id,name) 
+VALUES (100,'operator_check');
+UPDATE country set name = 'operator' where id=100;
+SELECT * FROM country;
+
+\c KRkirill postgres;
+DELETE FROM country WHERE id=100;
+
+Проверка роли юзер
+
+\c KRkirill role_user;
+INSERT INTO country(id,name) 
+VALUES (100,'user_check');
+UPDATE country set name = 'user' where id=100;
+SELECT * FROM country;
+
+\c KRkirill postgres;
+DELETE FROM country WHERE id = 100;
+
+Проверка роли админ
+
+\c KRkirill role_admin;
+INSERT INTO country(id, name) 
+VALUES (100, 'admin_check');
+UPDATE country set name = 'admin' where id = 100;
+SELECT * FROM country;
+DELETE FROM country WHERE id = 100;
+
+
+

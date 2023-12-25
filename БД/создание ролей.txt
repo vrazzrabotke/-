@@ -1,0 +1,45 @@
+CREATE ROLE operator_role WITH password '0001' LOGIN;
+GRANT INSERT, UPDATE, SELECT ON manufacturer, countries, product_type, shippers TO operator_role;
+
+
+CREATE ROLE user_role WITH password '0002' LOGIN;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO user_role;
+GRANT INSERT ON ALL TABLES IN SCHEMA public TO user_role;
+GRANT UPDATE ON ALL TABLES IN SCHEMA public TO user_role;
+
+
+CREATE ROLE admin_role WITH CREATEDB CREATEROLE password '0000' LOGIN;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin_role;
+
+\c cosmetics operator_role ;
+INSERT INTO countries(id, name) 
+VALUES (100, 'operator_role_check');
+UPDATE countries set id = 101 where id = 100;
+INSERT INTO product(id,name,id_type, id_manufacturer, price_sale)
+VALUES (100,'operator_role_check', 1, 1,1000);
+SELECT * FROM product;
+DELETE FROM countries WHERE id = 100;
+
+
+\c cosmetics posgres;
+DELETE FROM countries WHERE id = 101;
+
+\c cosmetics user_role ;
+INSERT INTO countries(id, name) 
+VALUES (102, 'user_role_check');
+UPDATE countries set id = 103 where id = 102;
+INSERT INTO product(id,name,id_type, id_manufacturer, price_sale)
+VALUES (105,'user_role_check', 1, 1,1000);
+SELECT * FROM product;
+DELETE FROM countries WHERE id = 102;
+DELETE FROM product WHERE id = 105;
+
+
+\c cosmetics admin_role ;
+INSERT INTO countries(id, name) 
+VALUES (100, 'user_role_check');
+UPDATE countries set id = 101 where id = 100;
+INSERT INTO product(id,name,id_type, id_manufacturer, price_sale)
+VALUES (100,'user_role_check', 1, 1,1000);
+SELECT * FROM product;
+DELETE FROM countries WHERE id = 100;
